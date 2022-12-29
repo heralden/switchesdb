@@ -1,12 +1,17 @@
 {:tasks
- {:requires ([babashka.fs :as fs])
+ {:requires ([clojure.string :as str]
+             [babashka.fs :as fs])
 
   prepare
   {:task
    (let [data-dir "resources/public/data"
-         csv-files (fs/glob "resources/theremingoat" "**{.csv}")]
+         csv-paths (fs/glob "resources/theremingoat" "**Raw Data CSV.csv")
+         remove-head (fn [file] (->> file slurp str/split-lines (drop 5)
+                                     (str/join \newline) (spit file)))]
      (when (fs/exists? data-dir)
        (fs/delete-tree data-dir))
      (fs/create-dir data-dir)
-     (doseq [csv-file csv-files]
-       (fs/copy csv-file (fs/path data-dir (fs/file-name csv-file)))))}}}
+     (doseq [csv-path csv-paths
+             :let [target-file (fs/file data-dir (fs/file-name csv-path))]]
+       (fs/copy csv-path target-file)
+       (remove-head target-file)))}}}
