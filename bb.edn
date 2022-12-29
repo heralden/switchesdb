@@ -1,0 +1,12 @@
+{:tasks
+ {:requires ([babashka.fs :as fs])
+
+  prepare
+  {:task
+   (let [data-dir "resources/public/data"
+         csv-files (fs/glob "resources/theremingoat" "**{.csv}")]
+     (when (fs/exists? data-dir)
+       (fs/delete-tree data-dir))
+     (fs/create-dir data-dir)
+     (doseq [csv-file csv-files]
+       (fs/copy csv-file (fs/path data-dir (fs/file-name csv-file)))))}}}

@@ -1,5 +1,8 @@
 .PHONY: *
 
+prepare:
+	bb prepare
+
 dev:
 	clj -m figwheel.main --build dev --repl
 
