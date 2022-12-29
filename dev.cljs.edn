@@ -1,0 +1,7 @@
+{:main switchesdb.app
+ :optimizations :none
+ :pretty-print true
+ :source-map true
+ :asset-path "/js/out"
+ :output-to "resources/public/js/app.js"
+ :output-dir "resources/public/js/out"}

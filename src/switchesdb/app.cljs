@@ -6,3 +6,5 @@
 
 (defn render [& _]
   (dumdom/render (App {}) container))
+
+(render)
