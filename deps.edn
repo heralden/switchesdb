@@ -1,0 +1,8 @@
+{:paths ["src" "resources"]
+ :deps {org.clojure/clojure {:mvn/version "1.10.1"}
+        org.clojure/clojurescript {:mvn/version "1.10.520"}
+        org.clojure/core.async {:mvn/version "1.5.648"}
+        org.clojure/core.match {:mvn/version "1.0.0"}
+        cjohansen/dumdom {:mvn/version "2022.04.12"}}
+ :aliases {:dev {:extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.14"}
+                              cjohansen/gadget-inspector {:mvn/version "0.2020.09.10"}}}}}
