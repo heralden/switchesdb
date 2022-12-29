@@ -1,0 +1,1 @@
+(ns switchesdb.static)
