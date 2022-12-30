@@ -42,18 +42,26 @@
             :legend false}}})
 
 (defcomponent SwitchesList [{:keys [switches]}]
-  [:aside
-   (into [:ul]
-         (for [[switch-name _switch-details]
-               (sort-by (comp str/lower-case key) switches)]
-           [:li switch-name]))])
+  (into [:ul.switches-list]
+        (for [[switch-name _switch-details]
+              (sort-by (comp str/lower-case key) switches)]
+          [:li [:label
+                [:input {:type "checkbox"}]
+                switch-name]])))
+
+(defcomponent SidePanel [{:keys [metadata store]}]
+  [:aside.side-panel
+   [:h1.side-title "SwitchesDB"]
+   (SwitchesList {:switches (:switches metadata)})
+   [:footer.side-footer
+    "About"]])
 
 (defcomponent Analyses [{:keys []}]
-  [:main
+  [:main.analyses
    [:section
     (VegaLite (goat-spec "data/Asus Rog NX Red Raw Data CSV.csv"))]])
 
-(defcomponent App [{:keys [metadata store]}]
+(defcomponent App [{:keys [metadata store] :as state}]
   [:div.container
-   (SwitchesList {:switches (:switches metadata)})
-   (Analyses)])
+   (SidePanel state)
+   (Analyses state)])
