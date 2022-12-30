@@ -6,12 +6,19 @@
   {:task
    (let [data-dir "resources/public/data"
          csv-paths (fs/glob "resources/theremingoat" "**Raw Data CSV.csv")
+         switches (into {} (map (comp (fn [x] [x {}]) str fs/file-name)
+                                csv-paths))
          remove-head (fn [file] (->> file slurp str/split-lines (drop 5)
                                      (str/join \newline) (spit file)))]
      (when (fs/exists? data-dir)
+       (println "Deleting data dir")
        (fs/delete-tree data-dir))
      (fs/create-dir data-dir)
+     (println "Populating data dir")
      (doseq [csv-path csv-paths
              :let [target-file (fs/file data-dir (fs/file-name csv-path))]]
        (fs/copy csv-path target-file)
-       (remove-head target-file)))}}}
+       (remove-head target-file))
+     (println "Creating metadata.edn")
+     (spit (fs/file data-dir "metadata.edn")
+           (pr-str {:switches switches})))}}}

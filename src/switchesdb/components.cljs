@@ -1,5 +1,6 @@
 (ns switchesdb.components
-  (:require [dumdom.core :refer [defcomponent]]))
+  (:require [dumdom.core :refer [defcomponent]]
+            [clojure.string :as str]))
 
 (defn embed-vega-lite [elem spec]
   (let [opts {:renderer :canvas
@@ -28,6 +29,7 @@
                       :field "Displacement"
                       :as "argmax_Displacement"}]}
     {:calculate "if(parseInt(datum['No.']) > parseInt(datum.argmax_Displacement['No.']), 'upstroke', 'downstroke')" :as "stroke"}]
+   ; :width "container"
    :mark "line"
    :encoding
    {:x {:field "Displacement"
@@ -36,9 +38,22 @@
     :y {:field "Force"
         :title "Force (gf)"
         :type "quantitative"}
-    :color {:field "stroke"}}})
+    :color {:field "stroke"
+            :legend false}}})
 
-(defcomponent App [{:keys []}]
-  [:div
-   [:h1 "foobar"]
-   (VegaLite (goat-spec "data/Asus Rog NX Red Raw Data CSV.csv"))])
+(defcomponent SwitchesList [{:keys [switches]}]
+  [:aside
+   (into [:ul]
+         (for [[switch-name _switch-details]
+               (sort-by (comp str/lower-case key) switches)]
+           [:li switch-name]))])
+
+(defcomponent Analyses [{:keys []}]
+  [:main
+   [:section
+    (VegaLite (goat-spec "data/Asus Rog NX Red Raw Data CSV.csv"))]])
+
+(defcomponent App [{:keys [metadata store]}]
+  [:div.container
+   (SwitchesList {:switches (:switches metadata)})
+   (Analyses)])

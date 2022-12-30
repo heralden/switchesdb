@@ -1,3 +1,6 @@
+^{:open-url false
+  :watch-dirs ["src"]
+  :css-dirs ["resources/public"]}
 {:main switchesdb.app
  :optimizations :none
  :pretty-print true
