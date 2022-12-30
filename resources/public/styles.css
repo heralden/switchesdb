@@ -21,11 +21,13 @@ h1,h2,h3,h4,h5,h6 {
 
 .container {
     display: grid;
-    grid-template-columns: minmax(min-content, max-content) auto;
+    grid-template-columns: minmax(min-content, 15em) auto;
 }
 
 .analyses {
     grid-column: 2;
+    height: calc(100vh - 1em);
+    padding: 0.5em 0.5em;
     overflow: auto;
 }
 
@@ -48,6 +50,10 @@ h1,h2,h3,h4,h5,h6 {
     list-style: none;
     padding-left: 0;
     margin: 0;
+}
+
+.switches-list-item {
+    white-space: nowrap;
 }
 
 .side-footer {

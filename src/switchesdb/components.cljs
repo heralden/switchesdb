@@ -1,4 +1,5 @@
 (ns switchesdb.components
+  {:clj-kondo/config '{:lint-as {dumdom.core/defcomponent clojure.core/defn}}}
   (:require [dumdom.core :refer [defcomponent]]
             [clojure.string :as str]))
 
@@ -11,6 +12,7 @@
         (.catch (fn [err]
                   (.warn js/console err))))))
 
+#_:clj-kondo/ignore
 (defcomponent VegaLite
   :on-mount (fn [elem spec] (embed-vega-lite elem spec))
   :on-update (fn [& args]
@@ -41,27 +43,38 @@
     :color {:field "stroke"
             :legend false}}})
 
-(defcomponent SwitchesList [{:keys [switches]}]
+(defn clean-switch-name [s]
+  (str/replace s #"Raw Data CSV.csv$" ""))
+
+(defcomponent SwitchesList [{:keys [switches switches-added]}]
   (into [:ul.switches-list]
         (for [[switch-name _switch-details]
               (sort-by (comp str/lower-case key) switches)]
-          [:li [:label
-                [:input {:type "checkbox"}]
-                switch-name]])))
+          [:li.switches-list-item
+           [:label
+            [:input {:type "checkbox"
+                     :checked (contains? switches-added switch-name)
+                     :on-change [:analyses/toggle-switch switch-name]}]
+            (clean-switch-name switch-name)]])))
 
-(defcomponent SidePanel [{:keys [metadata store]}]
+(defcomponent SidePanel [{:keys [metadata state]}]
   [:aside.side-panel
    [:h1.side-title "SwitchesDB"]
-   (SwitchesList {:switches (:switches metadata)})
+   (SwitchesList {:switches (:switches metadata)
+                  :switches-added (:switches-added state)})
    [:footer.side-footer
     "About"]])
 
-(defcomponent Analyses [{:keys []}]
-  [:main.analyses
-   [:section
-    (VegaLite (goat-spec "data/Asus Rog NX Red Raw Data CSV.csv"))]])
+(defcomponent Analysis [{switch-name :name}]
+  [:section {:key switch-name}
+   (VegaLite (goat-spec (str "data/" switch-name)))])
 
-(defcomponent App [{:keys [metadata store] :as state}]
+(defcomponent Analyses [{:keys [state]}]
+  [:main.analyses
+   (for [analysis (:analyses state)]
+     (Analysis analysis))])
+
+(defcomponent App [{:keys [metadata state] :as input}]
   [:div.container
-   (SidePanel state)
-   (Analyses state)])
+   (SidePanel input)
+   (Analyses input)])

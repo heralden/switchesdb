@@ -6,7 +6,8 @@
   {:task
    (let [data-dir "resources/public/data"
          csv-paths (fs/glob "resources/theremingoat" "**Raw Data CSV.csv")
-         switches (into {} (map (comp (fn [x] [x {}]) str fs/file-name)
+         switches (into {} (map (comp (fn [x] [x {:source :goat}])
+                                      str fs/file-name)
                                 csv-paths))
          remove-head (fn [file] (->> file slurp str/split-lines (drop 5)
                                      (str/join \newline) (spit file)))]
@@ -21,4 +22,6 @@
        (remove-head target-file))
      (println "Creating metadata.edn")
      (spit (fs/file data-dir "metadata.edn")
-           (pr-str {:switches switches})))}}}
+           (pr-str {:switches switches
+                    :sources {:goat {:author "ThereminGoat"
+                                     :url "https://github.com/ThereminGoat/force-curves"}}})))}}}
