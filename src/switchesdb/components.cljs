@@ -14,10 +14,9 @@
 
 #_:clj-kondo/ignore
 (defcomponent VegaLite
-  :on-mount (fn [elem spec] (embed-vega-lite elem spec))
-  :on-update (fn [& args]
-               (.log js/console (pr-str args))
-               (embed-vega-lite (first args) (second args)))
+  :on-render (fn [elem spec old-spec]
+               (when (not= spec old-spec)
+                 (embed-vega-lite elem spec)))
   [_spec]
   [:div "Loading chart..."])
 
@@ -31,8 +30,10 @@
                       :field "Displacement"
                       :as "argmax_Displacement"}]}
     {:calculate "if(parseInt(datum['No.']) > parseInt(datum.argmax_Displacement['No.']), 'upstroke', 'downstroke')" :as "stroke"}]
-   ; :width "container"
-   :mark "line"
+   :width 500
+   :height 250
+   :mark {:type "line"
+          :tooltip true}
    :encoding
    {:x {:field "Displacement"
         :title "Displacement (mm)"
@@ -41,7 +42,8 @@
         :title "Force (gf)"
         :type "quantitative"}
     :color {:field "stroke"
-            :legend false}}})
+            :legend false
+            :scale {:scheme "category20"}}}})
 
 (defn clean-switch-name [s]
   (str/replace s #"Raw Data CSV.csv$" ""))
@@ -67,6 +69,11 @@
 
 (defcomponent Analysis [{switch-name :name}]
   [:section {:key switch-name}
+   [:div.analysis-controls
+    [:button {:on-click [:analyses/move-up switch-name]} "Up"]
+    [:button {:on-click [:analyses/move-down switch-name]} "Down"]
+    [:button {:on-click [:analyses/remove switch-name]} "X"]
+    [:span (clean-switch-name switch-name)]]
    (VegaLite (goat-spec (str "data/" switch-name)))])
 
 (defcomponent Analyses [{:keys [state]}]
