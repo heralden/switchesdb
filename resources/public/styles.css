@@ -20,6 +20,15 @@ h1,h2,h3,h4,h5,h6 {
     margin: 0;
 }
 
+button {
+    background: none;
+    border: none;
+    margin: 0 0.2em;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
 .container {
     display: grid;
     grid-template-columns: minmax(min-content, 15em) auto;
@@ -58,4 +67,41 @@ h1,h2,h3,h4,h5,h6 {
 
 .side-footer {
     grid-row: 3;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: var(--bg-color);
+    min-width: 12em;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    padding: 0.5em 0.8em;
+    z-index: 1;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-list {
+    list-style: none;
+    padding-left: 0;
+    cursor: pointer;
+}
+
+.dropdown-list-item::before {
+    content: 'to ';
+}
+
+.dropdown-list-item-new::before {
+    content: 'as ';
+}
+
+.dropdown-list-item:hover {
+    text-decoration: underline;
 }

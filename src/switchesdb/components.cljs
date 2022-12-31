@@ -48,33 +48,51 @@
 (defn clean-switch-name [s]
   (str/replace s #"Raw Data CSV.csv$" ""))
 
-(defcomponent SwitchesList [{:keys [switches switches-added]}]
+(defcomponent SwitchesList [{:keys [switches analyses]}]
   (into [:ul.switches-list]
         (for [[switch-name _switch-details]
               (sort-by (comp str/lower-case key) switches)]
           [:li.switches-list-item
-           [:label
-            [:input {:type "checkbox"
-                     :checked (contains? switches-added switch-name)
-                     :on-change [:analyses/toggle-switch switch-name]}]
-            (clean-switch-name switch-name)]])))
+           [:div.dropdown
+            [:button {:on-click [:analyses/new switch-name]} "add"]
+            (when (seq analyses)
+              [:div.dropdown-content
+               (into [:ul.dropdown-list]
+                     (concat
+                       (for [{[first-switch] :switches id :id} analyses]
+                         [:li.dropdown-list-item
+                          {:on-click [:analyses/add-switch switch-name id]}
+                          (clean-switch-name first-switch)])
+                       [[:li.dropdown-list-divider [:hr]]]
+                       [[:li.dropdown-list-item.dropdown-list-item-new
+                         {:on-click [:analyses/new switch-name]}
+                         "New"]]))])]
+           (clean-switch-name switch-name)])))
 
 (defcomponent SidePanel [{:keys [metadata state]}]
   [:aside.side-panel
    [:h1.side-title "SwitchesDB"]
    (SwitchesList {:switches (:switches metadata)
-                  :switches-added (:switches-added state)})
+                  :analyses (:analyses state)})
    [:footer.side-footer
     "About"]])
 
-(defcomponent Analysis [{switch-name :name}]
-  [:section {:key switch-name}
+(defcomponent Analysis [{:keys [id switches]}]
+  [:section {:key id}
    [:div.analysis-controls
-    [:button {:on-click [:analyses/move-up switch-name]} "Up"]
-    [:button {:on-click [:analyses/move-down switch-name]} "Down"]
-    [:button {:on-click [:analyses/remove switch-name]} "X"]
-    [:span (clean-switch-name switch-name)]]
-   (VegaLite (goat-spec (str "data/" switch-name)))])
+    [:button {:on-click [:analyses/move-up id]} "up"]
+    [:button {:on-click [:analyses/move-down id]} "down"]
+    [:button {:on-click [:analyses/remove id]} "del"]
+    " : "
+    (interpose " | "
+      (for [switch-name switches]
+        [:strong (clean-switch-name switch-name)
+         [:button {:on-click (if (= 1 (count switches))
+                               [:analyses/remove id]
+                               [:analyses/remove-switch switch-name id])}
+          "x"]]))]
+   ;; TODO add overlays for additional switches
+   (VegaLite (goat-spec (str "data/" (first switches))))])
 
 (defcomponent Analyses [{:keys [state]}]
   [:main.analyses
