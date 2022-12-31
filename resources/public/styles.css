@@ -109,3 +109,10 @@ button {
 .dropdown-list-item:hover {
     text-decoration: underline;
 }
+
+.main-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}

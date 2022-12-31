@@ -118,11 +118,16 @@
    ;; TODO add overlays for additional switches
    (VegaLite (goat-spec (str "data/" (first switches))))])
 
-(defcomponent Analyses [{:keys [state]}]
+(defcomponent Analyses [{{:keys [analyses]} :state {:keys [sources]} :metadata}]
   [:main.analyses
    ; [:code (pr-str state)]
-   (for [analysis (:analyses state)]
-     (Analysis analysis))])
+   (if (seq analyses)
+     (for [analysis analyses]
+       (Analysis analysis))
+     [:div.main-message
+      [:p "Powered by: "
+       (for [{:keys [author url]} (vals sources)]
+         [:a {:href url :target "_blank"} author])]])])
 
 (defcomponent App [{:keys [metadata state] :as input}]
   [:div.container
