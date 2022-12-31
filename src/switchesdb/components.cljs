@@ -55,6 +55,9 @@
           [:li.switches-list-item
            [:div.dropdown
             [:button {:on-click [:analyses/new switch-name]} "add"]
+            (clean-switch-name switch-name)
+            ;; TODO this *for all switches* has to re-render whenever analyses changes.
+            ;; hover is also not a thing on touch interfaces. have on-click add the element instead.
             (when (seq analyses)
               [:div.dropdown-content
                (into [:ul.dropdown-list]
@@ -66,8 +69,7 @@
                        [[:li.dropdown-list-divider [:hr]]]
                        [[:li.dropdown-list-item.dropdown-list-item-new
                          {:on-click [:analyses/new switch-name]}
-                         "New"]]))])]
-           (clean-switch-name switch-name)])))
+                         "New"]]))])]])))
 
 (defcomponent SidePanel [{:keys [metadata state]}]
   [:aside.side-panel
