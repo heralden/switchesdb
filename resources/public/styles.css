@@ -44,7 +44,7 @@ button {
 .side-panel {
     grid-column: 1;
     display: grid;
-    grid-template-rows: 2em auto 1em;
+    grid-template-rows: 2em 1.5em auto 1em;
     height: calc(100vh - 1em);
     padding: 0.5em 0.5em;
 }
@@ -53,8 +53,12 @@ button {
     grid-row: 1;
 }
 
-.switches-list {
+.filter-box {
     grid-row: 2;
+}
+
+.switches-list {
+    grid-row: 3;
     overflow: auto;
     list-style: none;
     padding-left: 0;
@@ -66,7 +70,7 @@ button {
 }
 
 .side-footer {
-    grid-row: 3;
+    grid-row: 4;
 }
 
 .dropdown {

@@ -48,34 +48,56 @@
 (defn clean-switch-name [s]
   (str/replace s #"Raw Data CSV.csv$" ""))
 
-(defcomponent SwitchesList [{:keys [switches analyses]}]
-  (into [:ul.switches-list]
-        (for [[switch-name _switch-details]
-              (sort-by (comp str/lower-case key) switches)]
-          [:li.switches-list-item
-           [:div.dropdown
-            [:button {:on-click [:analyses/new switch-name]} "add"]
-            (clean-switch-name switch-name)
-            ;; TODO this *for all switches* has to re-render whenever analyses changes.
-            ;; hover is also not a thing on touch interfaces. have on-click add the element instead.
-            (when (seq analyses)
-              [:div.dropdown-content
-               (into [:ul.dropdown-list]
-                     (concat
-                       (for [{[first-switch] :switches id :id} analyses]
-                         [:li.dropdown-list-item
-                          {:on-click [:analyses/add-switch switch-name id]}
-                          (clean-switch-name first-switch)])
-                       [[:li.dropdown-list-divider [:hr]]]
-                       [[:li.dropdown-list-item.dropdown-list-item-new
-                         {:on-click [:analyses/new switch-name]}
-                         "New"]]))])]])))
+(defn ->filterf [{:keys [text] :as _filters} keyfn]
+  (comp
+    (if (str/blank? text)
+      identity
+      ;; Fuzzy search: string needs to contain every word someplace.
+      (let [keyws (-> text str/trim str/lower-case (str/split #"\s+"))]
+        (partial filter (fn [x]
+                          (every? #(str/includes? (keyfn x) %) keyws)))))))
+
+(defcomponent SwitchesList [{:keys [switches analyses filters]}]
+  (let [switches (->> switches
+                      ((->filterf filters (comp str/lower-case key)))
+                      (sort-by (comp str/lower-case key)))]
+    [:ul.switches-list
+     (if (seq switches)
+       (for [[switch-name _switch-details] switches]
+         [:li.switches-list-item
+          [:div.dropdown
+           [:button {:on-click [:analyses/new switch-name]} "add"]
+           (clean-switch-name switch-name)
+           ;; TODO this *for all switches* has to re-render whenever analyses changes.
+           ;; hover is also not a thing on touch interfaces. have on-click add the element instead.
+           (when (seq analyses)
+             [:div.dropdown-content
+              (into [:ul.dropdown-list]
+                    (concat
+                      (for [{[first-switch] :switches id :id} analyses]
+                        [:li.dropdown-list-item
+                         {:on-click [:analyses/add-switch switch-name id]}
+                         (clean-switch-name first-switch)])
+                      [[:li.dropdown-list-divider [:hr]]]
+                      [[:li.dropdown-list-item.dropdown-list-item-new
+                        {:on-click [:analyses/new switch-name]}
+                        "New"]]))])]])
+       "No results")]))
+
+(defcomponent FilterBox [{:keys [text]}]
+  [:div.filter-box
+   [:input {:type "text"
+            :placeholder "Filter switches"
+            :on-input [:filters/set-text]
+            :value text}]])
 
 (defcomponent SidePanel [{:keys [metadata state]}]
   [:aside.side-panel
    [:h1.side-title "SwitchesDB"]
+   (FilterBox (:filters state))
    (SwitchesList {:switches (:switches metadata)
-                  :analyses (:analyses state)})
+                  :analyses (:analyses state)
+                  :filters (:filters state)})
    [:footer.side-footer
     "About"]])
 
@@ -98,6 +120,7 @@
 
 (defcomponent Analyses [{:keys [state]}]
   [:main.analyses
+   ; [:code (pr-str state)]
    (for [analysis (:analyses state)]
      (Analysis analysis))])
 

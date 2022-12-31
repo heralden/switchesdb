@@ -5,8 +5,8 @@
             [cljs.reader :as edn]))
 
 (def initial-state
-  {:analyses []})
-;; {:analyses [{:id STR :switches [STR ...]} ...)}
+  {:analyses [] ; [{:id STR :switches [STR ...]} ...)}
+   :filters {:text ""}})
 
 (defonce metadata (atom nil))
 (defonce store (atom initial-state))
@@ -24,8 +24,8 @@
       (.then (fn [res] (.text res)))
       (.then (fn [edn-string]
                (reset! metadata (edn/read-string edn-string))
-               (dumdom/set-event-handler! (fn [_event action]
-                                            (swap! store handle action)))
+               (dumdom/set-event-handler! (fn [event action]
+                                            (swap! store handle action event)))
                (render)))))
 
 (comment

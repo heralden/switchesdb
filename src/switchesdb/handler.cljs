@@ -1,6 +1,6 @@
 (ns switchesdb.handler)
 
-(defmulti handle (fn [_state [action-name & _action-args]] action-name))
+(defmulti handle (fn [_state [action-name & _action-args] _event] action-name))
 
 (defmethod handle :analyses/add-switch [state [_ switch-name id]]
   (update state :analyses (fn [analyses]
@@ -52,3 +52,6 @@
 (defmethod handle :analyses/remove [state [_ id]]
   (update state :analyses (fn [analyses]
                             (filterv #(not= id (:id %)) analyses))))
+
+(defmethod handle :filters/set-text [state _ event]
+  (assoc-in state [:filters :text] (-> event .-target .-value)))
