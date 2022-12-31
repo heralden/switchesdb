@@ -1,65 +1,21 @@
 (ns switchesdb.components
   {:clj-kondo/config '{:lint-as {dumdom.core/defcomponent clojure.core/defn}}}
   (:require [dumdom.core :refer [defcomponent]]
-            [clojure.string :as str]))
-
-(defn embed-vega-lite [elem spec]
-  (let [opts {:renderer :canvas
-              :mode "vega-lite"
-              :theme "quartz"}]
-    (-> (js/vegaEmbed elem (clj->js spec) (clj->js opts))
-        (.then (get opts :callback #()))
-        (.catch (fn [err]
-                  (.warn js/console err))))))
+            [clojure.string :as str]
+            [switchesdb.charts :as charts]
+            [switchesdb.utils :as utils]))
 
 #_:clj-kondo/ignore
 (defcomponent VegaLite
   :on-render (fn [elem spec old-spec]
                (when (not= spec old-spec)
-                 (embed-vega-lite elem spec)))
+                 (charts/embed-vega-lite elem spec)))
   [_spec]
   [:div "Loading chart..."])
 
-(defn goat-spec [csv-file]
-  {:$schema "https://vega.github.io/schema/vega-lite/v5.json"
-   :data {:url csv-file}
-   :transform
-   [{:filter {:field "Force"
-              :range [0 120]}}
-    {:joinaggregate [{:op "argmax"
-                      :field "Displacement"
-                      :as "argmax_Displacement"}]}
-    {:calculate "if(parseInt(datum['No.']) > parseInt(datum.argmax_Displacement['No.']), 'upstroke', 'downstroke')" :as "stroke"}]
-   :width 500
-   :height 250
-   :mark {:type "line"
-          :tooltip true}
-   :encoding
-   {:x {:field "Displacement"
-        :title "Displacement (mm)"
-        :type "quantitative"}
-    :y {:field "Force"
-        :title "Force (gf)"
-        :type "quantitative"}
-    :color {:field "stroke"
-            :legend false
-            :scale {:scheme "category20"}}}})
-
-(defn clean-switch-name [s]
-  (str/replace s #"Raw Data CSV.csv$" ""))
-
-(defn ->filterf [{:keys [text] :as _filters} keyfn]
-  (comp
-    (if (str/blank? text)
-      identity
-      ;; Fuzzy search: string needs to contain every word someplace.
-      (let [keyws (-> text str/trim str/lower-case (str/split #"\s+"))]
-        (partial filter (fn [x]
-                          (every? #(str/includes? (keyfn x) %) keyws)))))))
-
 (defcomponent SwitchesList [{:keys [switches analyses filters]}]
   (let [switches (->> switches
-                      ((->filterf filters (comp str/lower-case key)))
+                      ((utils/->filterf filters (comp str/lower-case key)))
                       (sort-by (comp str/lower-case key)))]
     [:ul.switches-list
      (if (seq switches)
@@ -67,7 +23,7 @@
          [:li.switches-list-item
           [:div.dropdown
            [:button {:on-click [:analyses/new switch-name]} "add"]
-           (clean-switch-name switch-name)
+           (utils/clean-switch-name switch-name)
            ;; TODO this *for all switches* has to re-render whenever analyses changes.
            ;; hover is also not a thing on touch interfaces. have on-click add the element instead.
            (when (seq analyses)
@@ -77,7 +33,7 @@
                       (for [{[first-switch] :switches id :id} analyses]
                         [:li.dropdown-list-item
                          {:on-click [:analyses/add-switch switch-name id]}
-                         (clean-switch-name first-switch)])
+                         (utils/clean-switch-name first-switch)])
                       [[:li.dropdown-list-divider [:hr]]]
                       [[:li.dropdown-list-item.dropdown-list-item-new
                         {:on-click [:analyses/new switch-name]}
@@ -110,13 +66,13 @@
     " : "
     (interpose " | "
       (for [switch-name switches]
-        [:strong (clean-switch-name switch-name)
+        [:strong (utils/clean-switch-name switch-name)
          [:button {:on-click (if (= 1 (count switches))
                                [:analyses/remove id]
                                [:analyses/remove-switch switch-name id])}
           "x"]]))]
    ;; TODO add overlays for additional switches
-   (VegaLite (goat-spec (str "data/" (first switches))))])
+   (VegaLite (charts/goat-spec (str "data/" (first switches))))])
 
 (defcomponent Analyses [{{:keys [analyses]} :state {:keys [sources]} :metadata}]
   [:main.analyses
