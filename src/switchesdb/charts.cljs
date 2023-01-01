@@ -44,12 +44,14 @@
               {:field "switch" :type "nominal"}
               {:field "stroke" :type "nominal"}]}})
 
-(defn force-curve-spec [csv-files]
+(defn force-curve-spec [switches-metadata csv-files]
   {:$schema "https://vega.github.io/schema/vega-lite/v5.json"
    :width 500
    :height 250
    :layer (for [[index csv-file] (map-indexed vector csv-files)
-                :let [[color1 color2] (drop (* 2 index) (cycle colors))]]
-            (goat-spec {:csv-file csv-file
-                        :color1 color1
-                        :color2 color2}))})
+                :let [metadata (get switches-metadata csv-file)
+                      [color1 color2] (drop (* 2 index) (cycle colors))]]
+            (case (:source metadata)
+              :goat (goat-spec {:csv-file csv-file
+                                :color1 color1
+                                :color2 color2})))})

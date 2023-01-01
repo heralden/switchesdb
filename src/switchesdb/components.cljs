@@ -57,7 +57,7 @@
    [:footer.side-footer
     "About"]])
 
-(defcomponent Analysis [{:keys [id switches]}]
+(defcomponent Analysis [{{:keys [id switches]} :analysis switches-metadata :switches}]
   [:section {:key id}
    [:div.analysis-controls
     [:button {:on-click [:analyses/move-up id]} "up"]
@@ -72,14 +72,15 @@
                                [:analyses/remove id]
                                [:analyses/remove-switch switch-name id])}
           "x"]]))]
-   (VegaLite (charts/force-curve-spec switches))])
+   (VegaLite (charts/force-curve-spec switches-metadata switches))])
 
-(defcomponent Analyses [{{:keys [analyses]} :state {:keys [sources]} :metadata}]
+(defcomponent Analyses [{{:keys [analyses]} :state {:keys [sources switches]} :metadata}]
   [:main.analyses
    ; [:code (pr-str state)]
    (if (seq analyses)
      (for [analysis analyses]
-       (Analysis analysis))
+       (Analysis {:analysis analysis
+                  :switches switches}))
      [:div.main-message
       [:p "Powered by: "
        (for [{:keys [author url]} (vals sources)]
