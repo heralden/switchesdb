@@ -35,7 +35,8 @@
                   [:button.dropdown-list-item-button
                    {:on-click [:analyses/add-switch switch-name id]}
                    (utils/clean-switch-name first-switch)]])
-               [[:li.dropdown-list-divider [:hr]]]
+               (when (seq analyses)
+                 [[:li.dropdown-list-divider [:hr]]])
                [[:li.dropdown-list-item.dropdown-list-item-new
                  [:button.dropdown-list-item-button
                   {:on-click [:analyses/new switch-name]}
@@ -57,7 +58,8 @@
                   :analyses (:analyses state)
                   :filters (:filters state)})
    [:footer.side-footer
-    "About"]])
+    [:a {:href "https://github.com/heralden/switchesdb" :target "_blank"}
+     "Source"]]])
 
 (defcomponent Analysis [{{:keys [id switches]} :analysis switches-metadata :switches}]
   [:section {:key id}

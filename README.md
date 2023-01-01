@@ -20,3 +20,8 @@ make build
 ```
 
 You can now serve the contents of *resources/public*. If you just want to try it out, use `make serve` (not recommended for production deployments).
+
+## Credits
+
+This wouldn't be possible without the hard work of the dataset authors:
+- https://github.com/ThereminGoat/force-curves
