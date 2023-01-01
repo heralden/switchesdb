@@ -1,27 +1,64 @@
 {:tasks
  {:requires ([clojure.string :as str]
-             [babashka.fs :as fs])
+             [babashka.fs :as fs]
+             [babashka.curl :as curl])
+
+  haata
+  {:task
+   (let [target-dir "resources/haata"
+         build-url (fn [i] (str "https://chart-studio.plotly.com/~haata/" i ".csv"))
+         save-csv! (fn [url res]
+                     (let [[_ title]
+                           (re-find (re-pattern "<title>(.*)</title>")
+                                    (:body (curl/get (str/replace url (re-pattern ".csv$") ""))))
+                           [switch-name] (str/split title (re-pattern " \\| "))
+                           file-name (str switch-name ".csv")]
+                       (when-not (or (str/blank? title)
+                                     (str/includes? (str/lower-case title) "untitled"))
+                         (println (str "Saving file " file-name))
+                         (spit (fs/file target-dir file-name) (:body res)))))]
+     (when (fs/exists? target-dir)
+       (println "Clearing old CSV files")
+       (fs/delete-tree target-dir))
+     (fs/create-dir target-dir)
+     (dotimes [i 1000]
+       (let [url (build-url i)
+             _ (println (str "Checking " url))
+             res (curl/get url {:throw false})]
+         (when (and (= 200 (:status res))
+                    (= "text/csv" (get-in res [:headers "content-type"])))
+           (println "Found CSV")
+           (save-csv! url res)))))}
 
   prepare
   {:task
    (let [data-dir "resources/public/data"
-         csv-paths (fs/glob "resources/theremingoat" "**Raw Data CSV.csv")
-         switches (into {} (map (comp (fn [x] [x {:source :goat}])
-                                      str fs/file-name)
-                                csv-paths))
-         remove-head (fn [file] (->> file slurp str/split-lines (drop 5)
-                                     (str/join \newline) (spit file)))]
+         goat-paths (fs/glob "resources/theremingoat" "**Raw Data CSV.csv")
+         haata-paths (fs/glob "resources/haata" "*.csv")
+         switches-map (fn [paths source]
+                        (into {} (map (comp (fn [x] [x {:source source}])
+                                            str fs/file-name)
+                                      paths)))
+         remove-head! (fn [file] (->> file slurp str/split-lines (drop 5)
+                                      (str/join \newline) (spit file)))]
      (when (fs/exists? data-dir)
        (println "Deleting data dir")
        (fs/delete-tree data-dir))
      (fs/create-dir data-dir)
      (println "Populating data dir")
-     (doseq [csv-path csv-paths
-             :let [target-file (fs/file data-dir (fs/file-name csv-path))]]
+     (doseq [csv-path goat-paths
+             :let [file-name (str/replace (fs/file-name csv-path) (re-pattern " Raw Data CSV") "")
+                   target-file (fs/file data-dir file-name)]]
        (fs/copy csv-path target-file)
-       (remove-head target-file))
+       (remove-head! target-file))
+     (doseq [csv-path haata-paths
+             :let [target-file (fs/file data-dir (fs/file-name csv-path))]]
+       (fs/copy csv-path target-file {:replace-existing true}))
      (println "Creating metadata.edn")
      (spit (fs/file data-dir "metadata.edn")
-           (pr-str {:switches switches
+           (pr-str {:switches (merge (switches-map goat-paths :goat)
+                                     (switches-map haata-paths :haata))
                     :sources {:goat {:author "ThereminGoat"
-                                     :url "https://github.com/ThereminGoat/force-curves"}}})))}}}
+                                     :url "https://github.com/ThereminGoat/force-curves"}
+                              :haata {:author "HaaTa"
+                                      :url "https://plot.ly/~haata"}}})))}}}
