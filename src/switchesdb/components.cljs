@@ -22,22 +22,24 @@
        (for [[switch-name _switch-details] switches]
          [:li.switches-list-item
           [:div.dropdown
-           [:button {:on-click [:analyses/new switch-name]} "add"]
-           (utils/clean-switch-name switch-name)
+           [:span.switches-list-name
+            (utils/clean-switch-name switch-name)]
            ;; TODO this *for all switches* has to re-render whenever analyses changes.
-           ;; hover is also not a thing on touch interfaces. have on-click add the element instead.
-           (when (seq analyses)
-             [:div.dropdown-content
-              (into [:ul.dropdown-list]
-                    (concat
-                      (for [{[first-switch] :switches id :id} analyses]
-                        [:li.dropdown-list-item
-                         {:on-click [:analyses/add-switch switch-name id]}
-                         (utils/clean-switch-name first-switch)])
-                      [[:li.dropdown-list-divider [:hr]]]
-                      [[:li.dropdown-list-item.dropdown-list-item-new
-                        {:on-click [:analyses/new switch-name]}
-                        "New"]]))])]])
+           ;; hover is also not a thing on touch interfaces.
+           ;; replace this once we find a better UX...
+           [:div.dropdown-content
+            [:ul.dropdown-list
+             (concat
+               (for [{[first-switch] :switches id :id} analyses]
+                 [:li.dropdown-list-item
+                  [:button.dropdown-list-item-button
+                   {:on-click [:analyses/add-switch switch-name id]}
+                   (utils/clean-switch-name first-switch)]])
+               [[:li.dropdown-list-divider [:hr]]]
+               [[:li.dropdown-list-item.dropdown-list-item-new
+                 [:button.dropdown-list-item-button
+                  {:on-click [:analyses/new switch-name]}
+                  "new"]]])]]]])
        "No results")]))
 
 (defcomponent FilterBox [{:keys [text]}]

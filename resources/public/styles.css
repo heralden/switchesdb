@@ -65,12 +65,16 @@ button {
     margin: 0;
 }
 
+.side-footer {
+    grid-row: 4;
+}
+
 .switches-list-item {
     white-space: nowrap;
 }
 
-.side-footer {
-    grid-row: 4;
+.switches-list-name {
+    cursor: default;
 }
 
 .dropdown {
@@ -94,19 +98,22 @@ button {
 
 .dropdown-list {
     list-style: none;
-    padding-left: 0;
-    cursor: pointer;
+    padding-left: 2.2em;
 }
 
 .dropdown-list-item::before {
-    content: 'to ';
+    content: 'add to ';
+    margin-left: -2.9em;
 }
 
 .dropdown-list-item-new::before {
-    content: 'as ';
+    content: 'add as ';
 }
 
-.dropdown-list-item:hover {
+.dropdown-list-item-button {
+    text-decoration: none;
+}
+.dropdown-list-item-button:hover {
     text-decoration: underline;
 }
 
