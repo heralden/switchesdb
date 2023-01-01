@@ -65,14 +65,14 @@
     [:button {:on-click [:analyses/remove id]} "del"]
     " : "
     (interpose " | "
-      (for [switch-name switches]
-        [:strong (utils/clean-switch-name switch-name)
+      (for [[index switch-name] (map-indexed vector switches)]
+        [:strong {:style {:color (first (drop (* 2 index) (cycle charts/colors)))}}
+         (utils/clean-switch-name switch-name)
          [:button {:on-click (if (= 1 (count switches))
                                [:analyses/remove id]
                                [:analyses/remove-switch switch-name id])}
           "x"]]))]
-   ;; TODO add overlays for additional switches
-   (VegaLite (charts/goat-spec (str "data/" (first switches))))])
+   (VegaLite (charts/force-curve-spec switches))])
 
 (defcomponent Analyses [{{:keys [analyses]} :state {:keys [sources]} :metadata}]
   [:main.analyses
