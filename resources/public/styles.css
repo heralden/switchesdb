@@ -27,6 +27,7 @@ button {
     padding: 0;
     cursor: pointer;
     text-decoration: underline;
+    white-space: nowrap;
 }
 
 .container {
@@ -74,47 +75,32 @@ button {
 }
 
 .switches-list-name {
-    cursor: default;
+    cursor: pointer;
 }
 
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-.dropdown-content {
-    display: none;
+.add-switch-dialog {
     position: absolute;
+    left: 0;
     background-color: var(--bg-color);
-    min-width: 12em;
+    min-width: 13em;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     padding: 0.5em 0.8em;
     z-index: 1;
 }
 
-.dropdown:hover .dropdown-content {
-    display: block;
-}
-
-.dropdown-list {
+.dialog-list {
     list-style: none;
-    padding-left: 2.2em;
+    margin: 0;
+    padding-left: 2.5em;
 }
 
-.dropdown-list-item::before {
+.dialog-list-item::before {
     content: 'add to ';
     margin-left: -2.9em;
 }
 
-.dropdown-list-item-new::before {
+.dialog-list-item-new::before {
     content: 'add as ';
-}
-
-.dropdown-list-item-button {
-    text-decoration: none;
-}
-.dropdown-list-item-button:hover {
-    text-decoration: underline;
 }
 
 .main-message {

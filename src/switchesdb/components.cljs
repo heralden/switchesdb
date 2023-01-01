@@ -13,7 +13,7 @@
   [_spec]
   [:div "Loading chart..."])
 
-(defcomponent SwitchesList [{:keys [switches analyses filters]}]
+(defcomponent SwitchesList [{:keys [switches filters]}]
   (let [switches (->> switches
                       ((utils/->filterf filters (comp str/lower-case key)))
                       (sort-by (comp str/lower-case key)))]
@@ -21,26 +21,10 @@
      (if (seq switches)
        (for [[switch-name _switch-details] switches]
          [:li.switches-list-item
-          [:div.dropdown
-           [:span.switches-list-name
-            (utils/clean-switch-name switch-name)]
-           ;; TODO this *for all switches* has to re-render whenever analyses changes.
-           ;; hover is also not a thing on touch interfaces.
-           ;; replace this once we find a better UX...
-           [:div.dropdown-content
-            [:ul.dropdown-list
-             (concat
-               (for [{[first-switch] :switches id :id} analyses]
-                 [:li.dropdown-list-item
-                  [:button.dropdown-list-item-button
-                   {:on-click [:analyses/add-switch switch-name id]}
-                   (utils/clean-switch-name first-switch)]])
-               (when (seq analyses)
-                 [[:li.dropdown-list-divider [:hr]]])
-               [[:li.dropdown-list-item.dropdown-list-item-new
-                 [:button.dropdown-list-item-button
-                  {:on-click [:analyses/new switch-name]}
-                  "new"]]])]]]])
+          [:button {:on-click [:analyses/new switch-name]} "+"]
+          [:span.switches-list-name
+           {:on-click [:switches/add-dialog switch-name]}
+           (utils/clean-switch-name switch-name)]])
        "No results")]))
 
 (defcomponent FilterBox [{:keys [text]}]
@@ -55,7 +39,6 @@
    [:h1.side-title "SwitchesDB"]
    (FilterBox (:filters state))
    (SwitchesList {:switches (:switches metadata)
-                  :analyses (:analyses state)
                   :filters (:filters state)})
    [:footer.side-footer
     [:a {:href "https://github.com/heralden/switchesdb" :target "_blank"}
@@ -78,7 +61,7 @@
           "x"]]))]
    (VegaLite (charts/force-curve-spec switches-metadata switches))])
 
-(defcomponent Analyses [{{:keys [analyses]} :state {:keys [sources switches]} :metadata}]
+(defcomponent Analyses [{{:keys [analyses] :as state} :state {:keys [sources switches]} :metadata}]
   [:main.analyses
    ; [:code (pr-str state)]
    (if (seq analyses)
@@ -90,7 +73,27 @@
        (for [{:keys [author url]} (vals sources)]
          [:a {:href url :target "_blank"} author])]])])
 
+(defcomponent AddSwitchDialog [{{:keys [top switch]} :add-switch-dialog analyses :analyses}]
+  [:div.add-switch-dialog
+   {:style {:top (- top 10)}
+    :on-mouse-leave [:switches/hide-add-dialog]}
+   [:ul.dialog-list
+    (concat
+      (for [{[first-switch] :switches id :id} analyses]
+        [:li.dialog-list-item
+         [:button {:on-click [[:switches/hide-add-dialog]
+                              [:analyses/add-switch switch id]]}
+          (utils/clean-switch-name first-switch)]])
+      (when (seq analyses)
+        [[:li.dialog-list-divider [:hr]]])
+      [[:li.dialog-list-item.dialog-list-item-new
+        [:button {:on-click [[:switches/hide-add-dialog]
+                             [:analyses/new switch]]}
+         "new"]]])]])
+
 (defcomponent App [{:keys [metadata state] :as input}]
   [:div.container
    (SidePanel input)
-   (Analyses input)])
+   (Analyses input)
+   (when (:add-switch-dialog state)
+     (AddSwitchDialog state))])

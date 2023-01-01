@@ -55,3 +55,11 @@
 
 (defmethod handle :filters/set-text [state _ event]
   (assoc-in state [:filters :text] (-> event .-target .-value)))
+
+(defmethod handle :switches/add-dialog [state [_ switch-name] event]
+  (let [rect (-> event .-target .getBoundingClientRect)]
+    (assoc state :add-switch-dialog {:top (int (.-top rect))
+                                     :switch switch-name})))
+
+(defmethod handle :switches/hide-add-dialog [state]
+  (assoc state :add-switch-dialog nil))

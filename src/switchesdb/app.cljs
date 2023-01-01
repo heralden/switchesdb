@@ -6,6 +6,7 @@
 
 (def initial-state
   {:analyses [] ; [{:id STR :switches [STR ...]} ...)}
+   :add-switch-dialog nil ; {:top INT :switch STR}
    :filters {:text ""}})
 
 (defonce metadata (atom nil))
@@ -24,8 +25,12 @@
       (.then (fn [res] (.text res)))
       (.then (fn [edn-string]
                (reset! metadata (edn/read-string edn-string))
-               (dumdom/set-event-handler! (fn [event action]
-                                            (swap! store handle action event)))
+               (dumdom/set-event-handler! (fn [event action+]
+                                            (if (and (seqable? action+) (vector? (first action+)))
+                                              ;; Handle multiple events.
+                                              (doseq [action action+]
+                                                (swap! store handle action event))
+                                              (swap! store handle action+ event))))
                (render)))))
 
 (comment
