@@ -8,6 +8,8 @@ Consists of an SPA which only depends on static resources generated at build-tim
 
 Requires [java](https://adoptium.net/), [clojure](https://clojure.org/guides/install_clojure) and [babashka](https://github.com/babashka/babashka#installation).
 
+Once after cloning the repository you'll have to populate the submodules using: `git submodule update --init`
+
 **Development:** Use `make dev` or your favourite Clojure REPL integration.
 
 
