@@ -111,3 +111,7 @@ button {
     height: 100%;
     text-align: center;
 }
+
+.source-link {
+    margin-right: 0.3em;
+}

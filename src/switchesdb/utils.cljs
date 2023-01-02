@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]))
 
 (defn clean-switch-name [s]
-  (str/replace s #"Raw Data CSV.csv$" ""))
+  (str/replace s #"\.csv$" ""))
 
 (defn ->filterf [{:keys [text] :as _filters} keyfn]
   (comp

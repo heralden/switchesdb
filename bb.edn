@@ -35,19 +35,20 @@
    (let [data-dir "resources/public/data"
          goat-paths (fs/glob "resources/theremingoat" "**Raw Data CSV.csv")
          haata-paths (fs/glob "resources/haata" "*.csv")
-         switches-map (fn [paths source]
+         switches-map (fn [paths source & [namefn]]
                         (into {} (map (comp (fn [x] [x {:source source}])
-                                            str fs/file-name)
+                                            (or namefn identity) str fs/file-name)
                                       paths)))
          remove-head! (fn [file] (->> file slurp str/split-lines (drop 5)
-                                      (str/join \newline) (spit file)))]
+                                      (str/join \newline) (spit file)))
+         goat-namefn (fn [s] (str/replace s (re-pattern " Raw Data CSV") ""))]
      (when (fs/exists? data-dir)
        (println "Deleting data dir")
        (fs/delete-tree data-dir))
      (fs/create-dir data-dir)
      (println "Populating data dir")
      (doseq [csv-path goat-paths
-             :let [file-name (str/replace (fs/file-name csv-path) (re-pattern " Raw Data CSV") "")
+             :let [file-name (goat-namefn (fs/file-name csv-path))
                    target-file (fs/file data-dir file-name)]]
        (fs/copy csv-path target-file)
        (remove-head! target-file))
@@ -56,7 +57,7 @@
        (fs/copy csv-path target-file {:replace-existing true}))
      (println "Creating metadata.edn")
      (spit (fs/file data-dir "metadata.edn")
-           (pr-str {:switches (merge (switches-map goat-paths :goat)
+           (pr-str {:switches (merge (switches-map goat-paths :goat goat-namefn)
                                      (switches-map haata-paths :haata))
                     :sources {:goat {:author "ThereminGoat"
                                      :url "https://github.com/ThereminGoat/force-curves"}

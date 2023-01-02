@@ -71,7 +71,7 @@
      [:div.main-message
       [:p "Powered by: "
        (for [{:keys [author url]} (vals sources)]
-         [:a {:href url :target "_blank"} author])]
+         [:a.source-link {:href url :target "_blank"} author])]
       [:ul
        [:li "Add a switch from the left panel to analyse it"]
        [:li "Click a switch name to open a dialog for adding it to existing analyses"]]])])
