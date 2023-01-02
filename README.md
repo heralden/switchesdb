@@ -13,9 +13,11 @@ Run this once after cloning to populate the submodules: `git submodule update --
 **Development:** Use `make dev` or your favourite Clojure REPL integration.
 
 
-**Building:**
+**Building:** The first command will scrape the CSV from HaaTa's plot.ly charts, which can take a while. The *bb* commands only need to be run the first time, and from then on whenever you wish to pull in updates to the datasets.
+
 ```
-make prepare
+bb haata
+bb prepare
 make build
 ```
 
