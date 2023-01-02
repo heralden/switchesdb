@@ -44,7 +44,7 @@
     [:a {:href "https://github.com/heralden/switchesdb" :target "_blank"}
      "Source"]]])
 
-(defcomponent Analysis [{{:keys [id switches]} :analysis switches-metadata :switches}]
+(defcomponent Analysis [{{:keys [id switches]} :analysis metadata :metadata}]
   [:section {:key id}
    [:div.analysis-controls
     [:button {:on-click [:analyses/move-up id]} "up"]
@@ -59,15 +59,15 @@
                                [:analyses/remove id]
                                [:analyses/remove-switch switch-name id])}
           "x"]]))]
-   (VegaLite (charts/force-curve-spec switches-metadata switches))])
+   (VegaLite (charts/force-curve-spec metadata switches))])
 
-(defcomponent Analyses [{{:keys [analyses] :as state} :state {:keys [sources switches]} :metadata}]
+(defcomponent Analyses [{{:keys [analyses] :as state} :state {:keys [sources] :as metadata} :metadata}]
   [:main.analyses
    ; [:code (pr-str state)]
    (if (seq analyses)
      (for [analysis analyses]
        (Analysis {:analysis analysis
-                  :switches switches}))
+                  :metadata metadata}))
      [:div.main-message
       [:p "Powered by: "
        (for [{:keys [author url]} (vals sources)]
