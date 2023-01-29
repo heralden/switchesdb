@@ -13,11 +13,16 @@ Run this once after cloning to populate the submodules: `git submodule update --
 **Development:** Use `make dev` or your favourite Clojure REPL integration.
 
 
-**Building:** The first command will scrape the CSV from HaaTa's plot.ly charts, which can take a while. The *bb* commands only need to be run the first time, and from then on whenever you wish to pull in updates to the datasets.
+**Building:** All commands need to be run the first time. Afterwards, you can selectively update the datasets or only rebuild the webapp.
 
-```
+```bash
+# Scrape CSV from HaaTa's plot.ly charts (takes a while)
 bb haata
+# Update submodule pointing to ThereminGoat's repository, pulling in newly added switches
+git submodule update --remote
+# Import CSV files for serving and generate metadata
 bb prepare
+# Build the webapp
 make build
 ```
 
