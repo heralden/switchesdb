@@ -4,6 +4,7 @@ dev:
 	clj -m figwheel.main --build dev --repl
 
 build:
+	rm -rf resources/public/js/out
 	clj -m figwheel.main --build-once prod
 
 serve:
