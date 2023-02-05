@@ -4,7 +4,9 @@
 (defn embed-vega-lite [elem spec]
   (let [opts {:renderer :canvas
               :mode "vega-lite"
-              :theme "quartz"}]
+              :theme "quartz"
+              :scaleFactor 2
+              :downloadFileName (str "switchesdb_" (Math/abs (hash spec)))}]
     (-> (js/vegaEmbed elem (clj->js spec) (clj->js opts))
         (.then (get opts :callback #()))
         (.catch (fn [err]
