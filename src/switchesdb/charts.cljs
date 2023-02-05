@@ -108,7 +108,8 @@
                       :scale {:domain (mapcat (fn [s] [(utils/clean-switch-name s)
                                                        (str (utils/clean-switch-name s) " upstroke")])
                                               csv-files)
-                              :range (take (* 2 (count csv-files)) (cycle colors))}}}
+                              :range (take (* 2 (count csv-files)) (cycle colors))}}
+              :opacity {:value 0.8}}
    :layer (for [csv-file csv-files
                 :let [metadata (get switches csv-file)]]
             (case (:source metadata)
