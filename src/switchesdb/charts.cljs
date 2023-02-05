@@ -99,10 +99,10 @@
 
 (defn force-curve-spec [{:keys [switches sources] :as _metadata} csv-files]
   {:$schema "https://vega.github.io/schema/vega-lite/v5.json"
-   :width 500
+   :width "container"
    :height 250
-   ; :autosize {:type "fit-x"
-   ;            :contains "padding"}
+   :autosize {:type "fit-x"
+              :contains "padding"}
    :encoding {:color {:title ""
                       :legend {:values (map utils/clean-switch-name csv-files)}
                       :scale {:domain (mapcat (fn [s] [(utils/clean-switch-name s)

@@ -123,3 +123,8 @@ button {
 .source-link {
     margin-right: 0.3em;
 }
+
+.vega-embed {
+    min-width: 700px;
+    width: 100%;
+}
