@@ -58,8 +58,15 @@
 
 (defmethod handle :switches/add-dialog [state [_ switch-name] event]
   (let [rect (-> event .-target .getBoundingClientRect)]
+    (.stopPropagation event)
     (assoc state :add-switch-dialog {:top (int (.-top rect))
                                      :switch switch-name})))
 
 (defmethod handle :switches/hide-add-dialog [state]
   (assoc state :add-switch-dialog nil))
+
+(defmethod handle :side-panel/toggle [state]
+  (update state :mobile-side-panel? not))
+
+(defmethod handle :side-panel/hide [state]
+  (assoc state :mobile-side-panel? false))

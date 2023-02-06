@@ -36,7 +36,14 @@
 
 (defcomponent SidePanel [{:keys [metadata state]}]
   [:aside.side-panel
-   [:h1.side-title "SwitchesDB"]
+   {:class (when-not (:mobile-side-panel? state) :hidden)
+    :on-click [:switches/hide-add-dialog]}
+   [:h1.side-title "SwitchesDB"
+    (if (:mobile-side-panel? state)
+      [:button.hide-side-panel
+       {:on-click [:side-panel/toggle]} "«"]
+      [:button.hide-side-panel.collapsed
+       {:on-click [:side-panel/toggle]} "»"])]
    (FilterBox (:filters state))
    (SwitchesList {:switches (:switches metadata)
                   :filters (:filters state)})
@@ -63,6 +70,8 @@
 
 (defcomponent Analyses [{{:keys [analyses] :as state} :state {:keys [sources] :as metadata} :metadata}]
   [:main.analyses
+   {:on-click [[:switches/hide-add-dialog]
+               [:side-panel/hide]]}
    ; [:code (pr-str state)]
    (if (seq analyses)
      (for [analysis analyses]

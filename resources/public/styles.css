@@ -47,6 +47,10 @@ button {
     align-content: flex-start;
 }
 
+.analysis-controls {
+    padding-left: 1em;
+}
+
 .side-panel {
     grid-column: 1;
     background-color: var(--bg-accent-color);
@@ -55,6 +59,7 @@ button {
     grid-template-rows: 2em 1.5em auto 1em;
     height: calc(100vh - 1em);
     padding: 0.5em 0 0.5em 0.5em;
+    z-index: 1;
 }
 
 .side-title {
@@ -77,6 +82,13 @@ button {
     grid-row: 4;
 }
 
+.hide-side-panel {
+    float: right;
+    font-size: 1em;
+    line-height: 1em;
+    display: none;
+}
+
 .switches-list-item {
     white-space: nowrap;
 }
@@ -92,7 +104,7 @@ button {
     min-width: 13em;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     padding: 0.5em 0.8em;
-    z-index: 1;
+    z-index: 2;
 }
 
 .dialog-list {
@@ -127,4 +139,30 @@ button {
 .vega-embed {
     min-width: 700px;
     width: 100%;
+}
+
+@media only screen and (max-width: 768px) {
+    .container {
+        grid-template-columns: 0 auto;
+    }
+
+    .side-panel {
+        width: 250px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        transition: left 0.5s ease-in;
+    }
+
+    .side-panel.hidden {
+        left: -260px;
+    }
+
+    .hide-side-panel {
+        display: block;
+    }
+    .hide-side-panel.collapsed {
+        position: relative;
+        left: 25px;
+    }
 }

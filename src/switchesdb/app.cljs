@@ -7,7 +7,8 @@
 (def initial-state
   {:analyses [] ; [{:id STR :switches [STR ...]} ...)}
    :add-switch-dialog nil ; {:top INT :switch STR}
-   :filters {:text ""}})
+   :filters {:text ""}
+   :mobile-side-panel? true})
 
 (defonce metadata (atom nil))
 (defonce store (atom initial-state))
