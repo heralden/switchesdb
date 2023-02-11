@@ -16,10 +16,11 @@
 (defonce container (.getElementById js/document "app"))
 
 (defn save-hash! [analyses]
-  (set! js/location.hash
-        (str/join \; (map (fn [{:keys [switches]}]
-                            (str/join \, (map js/encodeURIComponent switches)))
-                          analyses))))
+  (let [next-hash (str \# (str/join \; (map (fn [{:keys [switches]}]
+                                              (str/join \, (map js/encodeURIComponent switches)))
+                                            analyses)))]
+    (when (not= next-hash js/location.hash)
+      (.pushState js/history nil "" next-hash))))
 
 (defn load-hash! [{all-switches :switches :as _metadata}]
   (when-let [hash (not-empty (subs (.-hash js/location) 1))]
@@ -63,6 +64,7 @@
                                                                             (reverse action+))))
                                               (swap! store handle action+ event))))
                (load-hash! (reset! metadata (edn/read-string edn-string)))
+               (.addEventListener js/window "popstate" #(load-hash! @metadata))
                (render)))))
 
 (add-watch store ::render render)
