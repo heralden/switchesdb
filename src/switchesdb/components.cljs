@@ -31,6 +31,7 @@
   [:div.filter-box
    [:input {:type "text"
             :placeholder "Filter switches"
+            :autofocus true
             :on-input [:filters/set-text]
             :value text}]])
 
