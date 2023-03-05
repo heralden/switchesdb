@@ -1,3 +1,4 @@
+.DS_Store
 .nrepl-port
 .clj-kondo/
 .cpcache/
@@ -5,4 +6,5 @@
 /resources/public/js/
 /resources/public/data/
 /resources/haata/
+/resources/data/
 /target/
