@@ -82,8 +82,13 @@
         results (mapv (fn [ods-path]
                         (if-let [sheet (read-ods ods-path)]
                           (if-let [reader (reader-fn (read-head sheet))]
-                            (writer (reader sheet ods-path)
-                                    (target-filename ods-path))
+                            (try
+                              (writer (reader sheet ods-path)
+                                      (target-filename ods-path))
+                              (catch Throwable e
+                                (println "ERROR Parsing ODS file" (fs/file-name ods-path)
+                                         "resulted in exception:" (ex-message e))
+                                :invalid))
                             (do (println "WARNING Skipped due to unsupported sheet layout:" (str ods-path))
                                 :unsupported))
                           :invalid))

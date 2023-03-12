@@ -33,9 +33,9 @@
                           (with-open [file-reader (io/reader (fs/file csv-path))]
                             (writer (reader file-reader)
                                     (target-filename csv-path)))
-                          (catch Exception e
-                            (println "ERROR Parsing CSV file '" (fs/file-name csv-path)
-                                     "' resulted in exception: " (ex-message e))
+                          (catch Throwable e
+                            (println "ERROR Parsing CSV file" (fs/file-name csv-path)
+                                     "resulted in exception:" (ex-message e))
                             :invalid)))
                       filepaths)]
     (assoc (frequencies results)
