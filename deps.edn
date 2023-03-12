@@ -1,5 +1,5 @@
 {:paths ["src" "resources"]
- :deps {org.clojure/clojure {:mvn/version "1.10.1"}
+ :deps {org.clojure/clojure {:mvn/version "1.11.1"}
         org.clojure/clojurescript {:mvn/version "1.10.520"}
         cjohansen/dumdom {:mvn/version "2022.09.28"}
         com.bhauman/figwheel-main {:mvn/version "0.2.18"}
