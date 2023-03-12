@@ -29,7 +29,7 @@
   this threshold is reached is deducted from all measurements. This means both cases
   of displacement being negative when force grows, and displacement being greater than
   zero when force grows, are compensated for."
-  [downstroke upstroke]
+  [downstroke upstroke & {:keys [filename]}]
   (let [downstroke (drop-while (complement data-row?) downstroke)
         upstroke (drop-while (complement data-row?) upstroke)
         _ (assert (seq downstroke) "No valid downstroke data")
@@ -37,7 +37,7 @@
         margin (displacement (last (take-while ignore? downstroke)))
         margin? (and (some? margin) (not (zero? margin)))]
     (when margin?
-      (println "INFO Adjusted by" margin "mm"))
+      (println "INFO Adjusted" filename "by" margin "mm"))
     (cond->> (concat
                (take-while data-row? (drop-while ignore? downstroke))
                (take-while data-row? upstroke))

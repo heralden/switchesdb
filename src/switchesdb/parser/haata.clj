@@ -5,7 +5,10 @@
             [clojure.data.csv :refer [read-csv]]
             [switchesdb.parser.commons :refer [builder writer]]))
 
-(defn reader [file-reader]
+(defn target-filename [csv-path]
+  (fs/file-name csv-path))
+
+(defn reader [file-reader csv-path]
   (let [values (read-csv file-reader)
         downstroke (map (fn [[displacement force]]
                           [(parse-double displacement)
@@ -17,17 +20,15 @@
                          (parse-double force)
                          "up"])
                       (drop 1 values))]
-    (builder downstroke upstroke)))
-
-(defn target-filename [csv-path]
-  (fs/file-name csv-path))
+    (builder downstroke upstroke
+             :filename (target-filename csv-path))))
 
 (defn parse []
   (let [filepaths (fs/glob "resources/haata" "*.csv")
         results (mapv (fn [csv-path]
                         (try
                           (with-open [file-reader (io/reader (fs/file csv-path))]
-                            (writer (reader file-reader)
+                            (writer (reader file-reader csv-path)
                                     (target-filename csv-path)))
                           (catch Throwable e
                             (println "ERROR Parsing CSV file" (fs/file-name csv-path)

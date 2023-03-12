@@ -7,6 +7,11 @@
 (defn- debug-log [msg values]
   (prn msg (map vec values)))
 
+(defn target-filename [ods-path]
+  (-> (fs/file-name ods-path)
+      (str/replace #"\.ods$" ".csv")
+      (str/replace #"[_-]" " ")))
+
 (defn read-type-1
   [sheet ods-path]
   #_(debug-log "type-1" (-> sheet (.getRange 0 5 5 4) .getValues))
@@ -19,7 +24,8 @@
         upstroke (map (fn [[_ _ displacement force]]
                         [displacement force "up"])
                       values)]
-    (builder downstroke upstroke)))
+    (builder downstroke upstroke
+             :filename (target-filename ods-path))))
 
 (defn read-type-2
   [sheet ods-path]
@@ -33,7 +39,8 @@
         upstroke (map (fn [[_ _ _ displacement force _]]
                         [displacement force "up"])
                       values)]
-    (builder downstroke upstroke)))
+    (builder downstroke upstroke
+             :filename (target-filename ods-path))))
 
 (defn read-type-3
   [sheet ods-path]
@@ -47,7 +54,8 @@
         upstroke (map (fn [[_ _ displacement force]]
                         [displacement force "up"])
                       values)]
-    (builder downstroke upstroke)))
+    (builder downstroke upstroke
+             :filename (target-filename ods-path))))
 
 (defn reader-fn
   "Where `head` is a vector of cells F1 and G1, return the suitable function."
@@ -71,11 +79,6 @@
     (-> ods-path fs/file SpreadSheet. .getSheets (nth 0))
     (catch NotAnOdsException _
       (println "ERROR Failed to read ODS file:" (str ods-path)))))
-
-(defn target-filename [ods-path]
-  (-> (fs/file-name ods-path)
-      (str/replace #"\.ods$" ".csv")
-      (str/replace #"[_-]" " ")))
 
 (defn parse []
   (let [filepaths (fs/glob "resources/bluepylons/Force curve measurements" "{,Kailh Choc Switches/}*.ods")
