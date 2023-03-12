@@ -5,16 +5,17 @@
 
 (def csv-headers ["displacement" "force" "stroke"])
 
-(defn data-row?
-  [[displacement force stroke]]
-  (and (number? displacement)
-       (number? force)
-       (string? stroke)))
-
 (defn displacement [v] (nth v 0))
 (defn force [v] (nth v 1))
 (defn stroke [v] (nth v 2))
 (defn measurement [displacement force stroke] [displacement force stroke])
+
+(defn data-row?
+  [v]
+  (and (number? (displacement v))
+       (number? (force v))
+       (or (= "up" (stroke v))
+           (= "down" (stroke v)))))
 
 (defn ignore? [v]
   (< (force v) 0.5))
