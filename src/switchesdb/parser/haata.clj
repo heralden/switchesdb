@@ -1,4 +1,4 @@
-(ns switchesdb.parser.theremingoat
+(ns switchesdb.parser.haata
   (:require [clojure.string :as str]
             [babashka.fs :as fs]
             [clojure.java.io :as io]
@@ -7,27 +7,23 @@
 
 (defn reader [file-reader]
   (let [values (read-csv file-reader)
-        [_ return-point] (re-matches #"No\.(\d+)" (nth (first values) 3))
-        downstroke (map (fn [[_ force _ displacement]]
+        downstroke (map (fn [[displacement force]]
                           [(parse-double displacement)
                            (parse-double force)
                            "down"])
-                        (take-while #(not= (first %) return-point)
-                                    (drop 6 values)))
-        upstroke (map (fn [[_ force _ displacement]]
+                        (drop 1 values))
+        upstroke (map (fn [[_ _ displacement force]]
                         [(parse-double displacement)
                          (parse-double force)
                          "up"])
-                      (drop-while #(not= (first %) return-point)
-                                  (drop 6 values)))]
+                      (drop 1 values))]
     (builder downstroke upstroke)))
 
 (defn target-filename [csv-path]
-  (-> (fs/file-name csv-path)
-      (str/replace #" Raw Data CSV\.csv$" ".csv")))
+  (fs/file-name csv-path))
 
 (defn parse []
-  (let [filepaths (fs/glob "resources/theremingoat" "**Raw Data CSV.csv")
+  (let [filepaths (fs/glob "resources/haata" "*.csv")
         results (mapv (fn [csv-path]
                         (try
                           (with-open [file-reader (io/reader (fs/file csv-path))]
@@ -42,5 +38,5 @@
            :filecount (count filepaths)))) 
 
 (comment
-  (with-open [file-reader (io/reader (io/resource "theremingoat/Forgiven/Forgiven Raw Data CSV.csv"))]
+  (with-open [file-reader (io/reader (io/resource "haata/Alps SKCC Cream.csv"))]
     (doall (reader file-reader))))
