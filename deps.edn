@@ -3,10 +3,12 @@
         org.clojure/clojurescript {:mvn/version "1.10.520"}
         cjohansen/dumdom {:mvn/version "2022.09.28"}
         com.bhauman/figwheel-main {:mvn/version "0.2.18"}
-        cjohansen/gadget-inspector {:mvn/version "0.2020.09.10"}
-        babashka/fs {:mvn/version "0.3.17"}
-        org.clojure/data.csv {:mvn/version "1.0.1"}
-        com.github.miachm.sods/SODS {:mvn/version "1.5.2"}}
- :aliases {:serve {:deps {org.babashka/http-server {:mvn/version "0.1.11"}}
+        cjohansen/gadget-inspector {:mvn/version "0.2020.09.10"}}
+ :aliases {:prepare {:deps {org.clojure/clojure {:mvn/version "1.11.1"}
+                            org.clojure/data.csv {:mvn/version "1.0.1"}
+                            com.github.miachm.sods/SODS {:mvn/version "1.5.2"}
+                            babashka/fs {:mvn/version "0.3.17"}}
+                     :main-opts ["-m" "switchesdb.parser.main"]}
+           :serve {:deps {org.babashka/http-server {:mvn/version "0.1.11"}}
                    :main-opts ["-m" "babashka.http-server"]
                    :exec-fn babashka.http-server/exec}}}

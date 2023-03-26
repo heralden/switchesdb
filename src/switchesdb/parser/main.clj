@@ -48,7 +48,7 @@
                 (fs/glob target-dir
                          (str \* (file-postfix source))))))
   
-(defn prepare []
+(defn -main []
   (let [reports (parse-all)
         _ (println "Generating metadata")
         switches (merge (scan-switches :pylon)

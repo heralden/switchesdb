@@ -21,7 +21,7 @@ bb haata
 # Update submodule pointing to ThereminGoat's repository, pulling in newly added switches
 git submodule update --remote
 # Import CSV files for serving and generate metadata
-bb prepare
+make prepare
 # Build the webapp
 make build
 ```
