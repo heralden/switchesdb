@@ -47,8 +47,8 @@
       :always (remove (comp neg? displacement)))))
 
 (defn writer
-  [data filename]
-  (let [target (io/file "resources" "data" filename)
+  [data target-dir filename]
+  (let [target (io/file target-dir filename)
         existed? (.exists target)]
     (if existed?
       (println "WARNING Overwriting:" (str target))

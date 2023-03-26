@@ -1,7 +1,8 @@
 (ns switchesdb.parser.bluepylons
   (:require [clojure.string :as str]
             [babashka.fs :as fs]
-            [switchesdb.parser.commons :refer [builder writer]])
+            [switchesdb.parser.commons :refer [builder writer]]
+            [switchesdb.shared :refer [file-postfix]])
   (:import [com.github.miachm.sods SpreadSheet NotAnOdsException]))
 
 (defn- debug-log [msg values]
@@ -9,7 +10,7 @@
 
 (defn target-filename [ods-path]
   (-> (fs/file-name ods-path)
-      (str/replace #"\.ods$" ".csv")
+      (str/replace #"\.ods$" (file-postfix :pylon))
       (str/replace #"[_-]" " ")))
 
 (defn read-type-1
@@ -80,13 +81,14 @@
     (catch NotAnOdsException _
       (println "ERROR Failed to read ODS file:" (str ods-path)))))
 
-(defn parse []
+(defn parse [target-dir]
   (let [filepaths (fs/glob "resources/bluepylons/Force curve measurements" "{,Kailh Choc Switches/}*.ods")
         results (mapv (fn [ods-path]
                         (if-let [sheet (read-ods ods-path)]
                           (if-let [reader (reader-fn (read-head sheet))]
                             (try
                               (writer (reader sheet ods-path)
+                                      target-dir
                                       (target-filename ods-path))
                               (catch Throwable e
                                 (println "ERROR Parsing ODS file" (fs/file-name ods-path)

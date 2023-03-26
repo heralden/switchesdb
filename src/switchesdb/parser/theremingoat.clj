@@ -3,11 +3,12 @@
             [babashka.fs :as fs]
             [clojure.java.io :as io]
             [clojure.data.csv :refer [read-csv]]
-            [switchesdb.parser.commons :refer [builder writer]]))
+            [switchesdb.parser.commons :refer [builder writer]]
+            [switchesdb.shared :refer [file-postfix]]))
 
 (defn target-filename [csv-path]
   (-> (fs/file-name csv-path)
-      (str/replace #" Raw Data CSV\.csv$" ".csv")))
+      (str/replace #" Raw Data CSV\.csv$" (file-postfix :goat))))
 
 (defn reader [file-reader csv-path]
   (let [values (read-csv file-reader)
@@ -27,12 +28,13 @@
     (builder downstroke upstroke
              :filename (target-filename csv-path))))
 
-(defn parse []
+(defn parse [target-dir]
   (let [filepaths (fs/glob "resources/theremingoat" "**Raw Data CSV.csv")
         results (mapv (fn [csv-path]
                         (try
                           (with-open [file-reader (io/reader (fs/file csv-path))]
                             (writer (reader file-reader csv-path)
+                                    target-dir
                                     (target-filename csv-path)))
                           (catch Throwable e
                             (println "ERROR Parsing CSV file" (fs/file-name csv-path)

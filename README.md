@@ -33,3 +33,4 @@ You can now serve the contents of *resources/public*. If you just want to try it
 This wouldn't be possible without the hard work of the dataset authors:
 - https://github.com/ThereminGoat/force-curves
 - https://plot.ly/~haata
+- https://github.com/bluepylons/Open-Switch-Curve-Meter
