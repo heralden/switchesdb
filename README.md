@@ -12,7 +12,6 @@ Run this once after cloning to populate the submodules: `git submodule update --
 
 **Development:** Use `make dev` or your favourite Clojure REPL integration.
 
-
 **Building:** All commands need to be run the first time. Afterwards, you can selectively update the datasets or only rebuild the webapp.
 
 ```bash
@@ -20,8 +19,10 @@ Run this once after cloning to populate the submodules: `git submodule update --
 bb haata
 # Update submodule pointing to ThereminGoat's repository, pulling in newly added switches
 git submodule update --remote
-# Import CSV files for serving and generate metadata
+# Parse data to CSV files and generate metadata
 make prepare
+# Replace files for serving
+make update
 # Build the webapp
 make build
 ```
