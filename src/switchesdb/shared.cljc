@@ -8,3 +8,7 @@
 (defn file-postfix [source]
   (assert (contains? postfixes source))
   (str \~ (postfixes source) ".csv"))
+
+(def file-postfix-re
+  (re-pattern (str "~(" (apply str (interpose \| (vals postfixes))) ")"
+                   ".csv$")))
