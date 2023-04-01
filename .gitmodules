@@ -1,3 +1,6 @@
 [submodule "resources/theremingoat"]
 	path = resources/theremingoat
 	url = https://github.com/ThereminGoat/force-curves
+[submodule "resources/bluepylons"]
+	path = resources/bluepylons
+	url = https://github.com/bluepylons/Open-Switch-Curve-Meter.git

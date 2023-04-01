@@ -1,5 +1,12 @@
 .PHONY: *
 
+prepare:
+	clj -M:prepare
+
+update:
+	rm -rf resources/public/data
+	cp -R resources/data resources/public/data
+
 dev:
 	clj -m figwheel.main --build dev --repl
 

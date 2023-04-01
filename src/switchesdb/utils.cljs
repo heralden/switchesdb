@@ -1,8 +1,15 @@
 (ns switchesdb.utils
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [clojure.set :refer [map-invert]]
+            [switchesdb.shared :refer [postfixes file-postfix-re]]))
 
-(defn clean-switch-name [s]
-  (str/replace s #"\.csv$" ""))
+(defn clean-switch-name [filename]
+  (str/replace filename file-postfix-re ""))
+
+(defn clean-switch-name+source [sources-meta filename]
+  (let [[_ source] (re-find file-postfix-re filename)
+        {:keys [author]} (sources-meta ((map-invert postfixes) source))]
+    (str/replace filename file-postfix-re (str " [" author "]"))))
 
 (defn ->filterf [{:keys [text] :as _filters} keyfn]
   (comp
