@@ -3,7 +3,8 @@
   (:require [dumdom.core :refer [defcomponent]]
             [clojure.string :as str]
             [switchesdb.charts :as charts]
-            [switchesdb.utils :as utils]))
+            [switchesdb.utils :as utils]
+            [switchesdb.shared :refer [postfixes]]))
 
 #_:clj-kondo/ignore
 (defcomponent VegaLite
@@ -19,12 +20,13 @@
                       (sort-by (comp str/lower-case key)))]
     [:ul.switches-list
      (if (seq switches)
-       (for [[switch-name _switch-details] switches]
+       (for [[switch-name switch-details] switches]
          [:li.switches-list-item
           [:button {:on-click [:analyses/new switch-name]} "+"]
           [:span.switches-list-name
            {:on-click [:switches/add-dialog switch-name]}
-           (utils/clean-switch-name switch-name)]])
+           (utils/clean-switch-name switch-name)
+           [:code.source-badge (-> switch-details :source postfixes)]]])
        "No results")]))
 
 (defcomponent FilterBox [{:keys [text]}]
@@ -63,6 +65,7 @@
       (for [[index switch-name] (map-indexed vector switches)]
         [:strong {:style {:color (first (drop (* 2 index) (cycle charts/colors)))}}
          (utils/clean-switch-name switch-name)
+         [:code.source-badge (-> metadata :switches (get switch-name) :source postfixes)]
          [:button {:on-click (if (= 1 (count switches))
                                [:analyses/remove id]
                                [:analyses/remove-switch switch-name id])}
