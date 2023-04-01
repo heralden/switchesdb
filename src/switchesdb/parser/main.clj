@@ -28,13 +28,13 @@
     (fs/delete-tree target-dir))
   (fs/create-dir target-dir)
   (let [_ (println "Parsing" (get-in sources [:pylon :author]) "data")
-        pylon-report (spit-logs (fs/file target-dir "pylon.log")
+        pylon-report (spit-logs (fs/file target-dir "pylon.txt")
                                 #(bluepylons/parse target-dir))
         _ (println "Parsing" (get-in sources [:haata :author]) "data")
-        haata-report (spit-logs (fs/file target-dir "haata.log")
+        haata-report (spit-logs (fs/file target-dir "haata.txt")
                                 #(haata/parse target-dir))
         _ (println "Parsing" (get-in sources [:goat :author]) "data")
-        goat-report (spit-logs (fs/file target-dir "goat.log")
+        goat-report (spit-logs (fs/file target-dir "goat.txt")
                                #(theremingoat/parse target-dir))]
     (println "Done parsing!")
     {:pylon pylon-report

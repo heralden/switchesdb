@@ -72,6 +72,35 @@
           "x"]]))]
    (VegaLite (charts/force-curve-spec metadata switches))])
 
+(defcomponent Splash [{{:keys [date sources reports]} :metadata}]
+  [:div.main-message
+   [:p "Powered by: "
+    (for [{:keys [author url]} (vals sources)]
+      [:a.source-link {:href url :target "_blank"}
+       author])]
+   [:ul.instructions
+    [:li "Add a switch from the left panel to analyse it"]
+    [:li "Click a switch name to open a dialog for adding it to existing analyses"]]
+   [:p (str "Last run: " (.toLocaleDateString date "en-GB"))]
+   [:table
+    [:tr
+     (concat
+       [[:th]]
+       (for [source (keys reports)]
+         [:th (-> sources source :author)])
+       [[:th "Total"]])]
+    (for [field (set (mapcat keys (vals reports)))]
+      [:tr
+       (concat
+         [[:th (name field)]]
+         (for [source (keys reports)]
+           [:td (-> reports source field)])
+         [[:td (apply + (map field (vals reports)))]])])]
+   [:p "Logs: "
+    (for [source (keys sources)]
+      [:a.source-link {:href (str "data/" (name source) ".txt") :target "_blank"}
+       (-> sources source :author)])]])
+
 (defcomponent Analyses [{{:keys [analyses] :as state} :state {:keys [sources] :as metadata} :metadata}]
   [:main.analyses
    {:on-click [[:switches/hide-add-dialog]
@@ -81,13 +110,7 @@
      (for [analysis analyses]
        (Analysis {:analysis analysis
                   :metadata metadata}))
-     [:div.main-message
-      [:p "Powered by: "
-       (for [{:keys [author url]} (vals sources)]
-         [:a.source-link {:href url :target "_blank"} author])]
-      [:ul
-       [:li "Add a switch from the left panel to analyse it"]
-       [:li "Click a switch name to open a dialog for adding it to existing analyses"]]])])
+     (Splash {:metadata metadata}))])
 
 (defcomponent AddSwitchDialog [{{:keys [top switch]} :add-switch-dialog analyses :analyses}]
   [:div.add-switch-dialog

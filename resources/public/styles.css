@@ -141,6 +141,14 @@ button {
     text-align: center;
 }
 
+.instructions {
+    list-style: none;
+}
+
+.instructions > li::before {
+    content: "☞ ";
+}
+
 .source-link {
     margin-right: 0.3em;
 }
