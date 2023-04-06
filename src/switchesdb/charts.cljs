@@ -42,7 +42,8 @@
               {:field "Switch" :type "nominal"}
               {:field "Source" :type "nominal"}]}})
 
-(defn force-curve-spec [{:keys [switches sources] :as _metadata} csv-files]
+(defn force-curve-spec [{:keys [switches sources] :as _metadata} csv-files
+                        & {:keys [hide-upstroke?]}]
   (let [map-clean #(map (partial utils/clean-switch-name+source sources) %)]
     {:$schema "https://vega.github.io/schema/vega-lite/v5.json"
      :width "container"
@@ -51,8 +52,10 @@
                 :contains "padding"}
      :encoding {:color {:title ""
                         :legend {:values (map-clean csv-files)}
-                        :scale {:domain (mapcat (fn [s] [s (str s "up")]) (map-clean csv-files))
-                                :range (take (* 2 (count csv-files)) (cycle colors))}}
+                        :scale {:domain (cond->> (mapcat (fn [s] [s (str s "up")]) (map-clean csv-files))
+                                          hide-upstroke? (take-nth 2))
+                                :range (cond->> (take (* 2 (count csv-files)) (cycle colors))
+                                         hide-upstroke? (take-nth 2))}}
                 :opacity {:value 0.8}}
      :layer (for [csv-file csv-files
                   :let [switch-meta (get switches csv-file)

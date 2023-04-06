@@ -35,8 +35,21 @@ button {
     grid-template-columns: minmax(min-content, 15em) auto;
 }
 
-.analyses {
+.main-panel {
     grid-column: 2;
+    display: grid;
+    grid-template-rows: auto auto;
+}
+
+.settings-panel {
+    grid-row: 1;
+    background-color: var(--bg-accent-color);
+    padding: 0.75em 0.5em 0.5em 1.35em;
+    border-bottom: 2px solid var(--secondary-color);
+}
+
+.analyses {
+    grid-row: 2;
     height: calc(100vh - 1em);
     padding: 0.5em 0.5em;
     overflow: auto;

@@ -70,3 +70,6 @@
 
 (defmethod handle :side-panel/hide [state]
   (assoc state :mobile-side-panel? false))
+
+(defmethod handle :settings/toggle-upstroke [state]
+  (update-in state [:settings :hide-upstroke?] not))

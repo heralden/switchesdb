@@ -54,7 +54,7 @@
     [:a {:href "https://github.com/heralden/switchesdb" :target "_blank"}
      "Source"]]])
 
-(defcomponent Analysis [{{:keys [id switches]} :analysis metadata :metadata}]
+(defcomponent Analysis [{{:keys [id switches]} :analysis metadata :metadata settings :settings}]
   [:section {:key id}
    [:div.analysis-controls
     [:button {:on-click [:analyses/move-up id]} "up"]
@@ -70,7 +70,8 @@
                                [:analyses/remove id]
                                [:analyses/remove-switch switch-name id])}
           "x"]]))]
-   (VegaLite (charts/force-curve-spec metadata switches))])
+   (VegaLite (charts/force-curve-spec metadata switches
+                                      :hide-upstroke? (:hide-upstroke? settings)))])
 
 (defcomponent Splash [{{:keys [date sources reports]} :metadata}]
   [:div.main-message
@@ -101,7 +102,15 @@
       [:a.source-link {:href (str "data/" (name source) ".txt") :target "_blank"}
        (-> sources source :author)])]])
 
-(defcomponent Analyses [{{:keys [analyses] :as state} :state {:keys [sources] :as metadata} :metadata}]
+(defcomponent Settings [{:keys [hide-upstroke?]}]
+  [:div.settings-panel
+   [:label
+    [:input {:type "checkbox"
+             :checked hide-upstroke?
+             :on-change [:settings/toggle-upstroke]}]
+    "Hide upstroke"]])
+
+(defcomponent Analyses [{{:keys [analyses settings] :as state} :state {:keys [sources] :as metadata} :metadata}]
   [:main.analyses
    {:on-click [[:switches/hide-add-dialog]
                [:side-panel/hide]]}
@@ -109,7 +118,8 @@
    (if (seq analyses)
      (for [analysis analyses]
        (Analysis {:analysis analysis
-                  :metadata metadata}))
+                  :metadata metadata
+                  :settings settings}))
      (Splash {:metadata metadata}))])
 
 (defcomponent AddSwitchDialog [{{:keys [top switch]} :add-switch-dialog analyses :analyses}]
@@ -133,6 +143,8 @@
 (defcomponent App [{:keys [metadata state] :as input}]
   [:div.container
    (SidePanel input)
-   (Analyses input)
+   [:div.main-panel
+    (Analyses input)
+    (Settings (:settings state))]
    (when (:add-switch-dialog state)
      (AddSwitchDialog state))])

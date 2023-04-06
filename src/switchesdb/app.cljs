@@ -9,6 +9,7 @@
   {:analyses [] ; [{:id STR :switches [STR ...]} ...)}
    :add-switch-dialog nil ; {:top INT :switch STR}
    :filters {:text ""}
+   :settings {:hide-upstroke? false}
    :mobile-side-panel? true})
 
 (defonce metadata (atom nil))
