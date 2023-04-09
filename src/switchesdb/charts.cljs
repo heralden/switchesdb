@@ -1,5 +1,6 @@
 (ns switchesdb.charts
-  (:require [switchesdb.utils :as utils]))
+  (:require [switchesdb.utils :as utils]
+            [clojure.string :as str]))
 
 (defn embed-vega-lite [elem spec]
   (let [opts {:renderer :canvas
@@ -51,7 +52,11 @@
      :autosize {:type "fit-x"
                 :contains "padding"}
      :encoding {:color {:title ""
-                        :legend {:values (map-clean csv-files)}
+                        :legend {:values (concat (map-clean csv-files)
+                                                 [(str "switchesdb.com - measurements by "
+                                                       (str/join ", " (map :author (vals sources))))])
+                                 :orient "top-left"
+                                 :labelLimit 0}
                         :scale {:domain (cond->> (mapcat (fn [s] [s (str s "up")]) (map-clean csv-files))
                                           hide-upstroke? (take-nth 2))
                                 :range (cond->> (take (* 2 (count csv-files)) (cycle colors))
@@ -64,3 +69,13 @@
                            :source source-meta
                            :display-name (utils/clean-switch-name csv-file)
                            :switch-name (utils/clean-switch-name+source sources csv-file)}))}))
+
+(comment
+
+  "For a watermark, add layer:"
+  {:data {:values [{}]}
+   :mark
+   {:type "text"
+    :text "my watermark"
+    :fontSize 16
+    :fill "#ccc"}})
