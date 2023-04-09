@@ -48,7 +48,7 @@
   (let [map-clean #(map (partial utils/clean-switch-name+source sources) %)]
     {:$schema "https://vega.github.io/schema/vega-lite/v5.json"
      :width "container"
-     :height 250
+     :height 300
      :autosize {:type "fit-x"
                 :contains "padding"}
      :encoding {:color {:title ""
