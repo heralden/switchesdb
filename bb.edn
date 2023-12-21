@@ -14,7 +14,8 @@
                            [switch-name] (str/split title (re-pattern " \\| "))
                            file-name (str switch-name ".csv")]
                        (when-not (or (str/blank? title)
-                                     (str/includes? (str/lower-case title) "untitled"))
+                                     (str/includes? (str/lower-case title) "untitled")
+                                     (str/blank? switch-name))
                          (println (str "Saving file " file-name))
                          (spit (fs/file target-dir file-name) (:body res)))))]
      (when (fs/exists? target-dir)
