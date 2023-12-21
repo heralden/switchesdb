@@ -50,7 +50,7 @@ button {
 
 .analyses {
     grid-row: 2;
-    height: calc(100vh - 1em);
+    height: calc(100vh - 4em);
     padding: 0.5em 0.5em;
     overflow: auto;
     display: flex;

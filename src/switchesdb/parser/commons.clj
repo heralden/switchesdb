@@ -37,7 +37,7 @@
         _ (assert (seq downstroke) "No valid downstroke data")
         _ (assert (seq upstroke) "No valid upstroke data")
         margin (displacement (last (take-while ignore? downstroke)))
-        margin? (and (some? margin) (not (zero? margin)))]
+        margin? (and (some? margin) (>= (abs margin) 0.01))]
     (when margin?
       (println "INFO Adjusted" filename "by" (- margin) "mm"))
     (cond->> (concat
