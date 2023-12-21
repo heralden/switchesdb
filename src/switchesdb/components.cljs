@@ -1,10 +1,11 @@
 (ns switchesdb.components
   {:clj-kondo/config '{:lint-as {dumdom.core/defcomponent clojure.core/defn}}}
-  (:require [dumdom.core :refer [defcomponent]]
+  (:require [dumdom.core :refer [defcomponent dispatch-event-data]]
             [clojure.string :as str]
             [switchesdb.charts :as charts]
             [switchesdb.utils :as utils]
-            [switchesdb.shared :refer [postfixes]]))
+            [switchesdb.shared :refer [postfixes]]
+            [goog.functions :refer [debounce]]))
 
 #_:clj-kondo/ignore
 (defcomponent VegaLite
@@ -30,12 +31,13 @@
        "No results")]))
 
 (defcomponent FilterBox [{:keys [text]}]
-  [:div.filter-box
-   [:input {:type "text"
-            :placeholder "Filter switches"
-            :autofocus true
-            :on-input [:filters/set-text]
-            :value text}]])
+  (let [debounced (debounce #(dispatch-event-data % [:filters/set-text]) 250)]
+    [:div.filter-box
+     [:input {:type "text"
+              :placeholder "Filter switches"
+              :autofocus true
+              :on-input debounced
+              :value text}]]))
 
 (defcomponent SidePanel [{:keys [metadata state]}]
   [:aside.side-panel
