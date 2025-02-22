@@ -8,6 +8,7 @@
 
 (defn target-filename [csv-path]
   (-> (fs/file-name csv-path)
+      (str/replace #"[$&+,:;=?@#|'<>^*%!]" "")
       (str/replace #" Raw Data CSV\.csv$" (file-postfix :goat))))
 
 (defn reader [file-reader csv-path]
